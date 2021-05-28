@@ -11,85 +11,95 @@ using std::cout;
 using std::endl;
 using std::string;
 using namespace std::chrono;
-using std::sqrt;
-using std::max;
-using std::min;
 using namespace std::chrono_literals;
 
 #define VK_Z 0x5A // Windows Virtual-Key Z
-
-struct tetromino {
-	string s;
-	size_t height;
-	size_t width;
+//---------------------------------------------------------------------------------------------------------
+class Tetromino {
+	public:
+		string s;
+		size_t height;
+		size_t width;
+		void rotate();
+		Tetromino(string tetromino) {
+			height = maxTetrominoHeight(tetromino);
+			width = maxTetrominoWidth(tetromino);
+			s = trimTetromino(tetromino);
+		}
+	private:
+		size_t maxTetrominoWidth(string sTetromino);
+		size_t maxTetrominoHeight(string sTetromino);
+		string trimTetromino(string sTetromino);
 };
 
+void Tetromino::rotate() {
+	string sRotatedTetromino;
+	for (size_t i = 0; i < width*height-1; i++) {
+		sRotatedTetromino[(height-1)*width - width*(i%height) + (i/height)] = s[i];
+	}
+	s = sRotatedTetromino;
+	std::swap(height, width);
+}
+
+// Assumes sTetromino is NxN
+// std::count brings a ptrdiff_t which is basically a long int. std::max can't handle the simple task of matching an int with ptrdiff_t so m needs to be ptrdiff_t.
+size_t Tetromino::maxTetrominoWidth(string sTetromino) {
+	size_t m = 0;
+	size_t nTetrominoSize = std::sqrt(sTetromino.length());
+	for (size_t tp = 0; tp < nTetrominoSize; tp++) {
+		string sRow = sTetromino.substr(tp * nTetrominoSize, tp*nTetrominoSize+ nTetrominoSize);
+		m = std::max(m, sRow.find_last_of('X') - sRow.find_first_of('X') + 1);
+	}
+	return m;
+}
+
+// Assumes sTetromino is NxN
+size_t Tetromino::maxTetrominoHeight(string sTetromino) {
+	size_t m = 4;
+	size_t nTetrominoSize = std::sqrt(sTetromino.length());
+	for (size_t tp = 0; tp < nTetrominoSize; tp++) {
+		string sRow = sTetromino.substr(tp * nTetrominoSize, tp*nTetrominoSize+ nTetrominoSize);
+		if (std::count(sRow.begin(), sRow.end(), 'X') == 0) {m--;}
+	}
+	return m;
+}
+
+// Must be called after maxTetrominoHeight and maxTetrominoWidth
+string Tetromino::trimTetromino(string sTetromino) {
+	string sTrimmedTetromino;
+	for (size_t y = 0; y < height; y++) {
+		for (size_t x = 0; x < width; x++) {
+			sTrimmedTetromino[y*width + x] = sTetromino[y*width + x];
+		}
+	}
+	return sTrimmedTetromino;
+}
+// ----------------------------------------------------------------------------------------------------------------------
 // Even 4x4 tetrominos only
 // TODO handle any nxn size.
-std::array<tetromino, 7> tetrominoList;
+std::array<string, 7> tetrominoList;
 const int fieldWidth = 12;
 const int fieldHeight = 18;
 const int screenWidth = 30;
 const int screenHeight = 70;
 char fieldSymbolLegend[] = " ABCDEFG=#";
 
-void rotateTetromino(tetromino& RotatedTetromino, const tetromino piece, int rotation) {
-	switch (rotation % 4) {
-		case 0:
-			for (int i = 0; i < 16; i++) {RotatedTetromino.s[i] = piece.s[i];}
-			RotatedTetromino.height = piece.height;
-			RotatedTetromino.width = piece.width;
-			break;
-		case 1: // 90 degrees
-			for (int i = 0; i < 16; i++) {RotatedTetromino.s[i] = piece.s[4 * (3 - i%4) + i/4];} 
-			RotatedTetromino.height = piece.width;
-			RotatedTetromino.width = piece.height;	
-			break;
-		case 2: // 180 degress
-			for (int i = 0; i < 16; i++) {RotatedTetromino.s[i] = piece.s[15 - i];} 
-			RotatedTetromino.height = piece.height;
-			RotatedTetromino.width = piece.width;
-			break;
-		case 3: // 270 degrees
-			for (int i = 0; i < 16; i++) {RotatedTetromino.s[i] = piece.s[3 - i/4 + 4 * (i%4)];}
-			RotatedTetromino.height = piece.width;
-			RotatedTetromino.width = piece.height;
-			break;
-	}
-}
-
-bool bDoesItFit(const tetromino starterPiece, int rotation, int nPosX, int nPosY, unsigned char action = VK_DOWN) {
+bool bDoesItFit(Tetromino tetromino, int nPosX, int nPosY, unsigned char action = VK_DOWN) {
 	switch(action) {
 		case VK_DOWN:
-			return nPosY + starterPiece.height <= fieldHeight - 2;
+			return nPosY + tetromino.height <= fieldHeight - 2;
 			break;
 		case VK_RIGHT:
-			return nPosX + starterPiece.width - 1 < fieldWidth - 2;
+			return nPosX + tetromino.width - 1 < fieldWidth - 2;
 			break;
 		case VK_LEFT:
 			return nPosX > 1;
 			break;
 		case VK_Z:
-			return (nPosY + starterPiece.width <= fieldHeight - 2) && (nPosX + starterPiece.height < fieldWidth - 2) && (nPosX >= 1);
+			return (nPosY + tetromino.width <= fieldHeight - 2) && (nPosX + tetromino.height < fieldWidth - 2) && (nPosX >= 1);
 			break;
 	}
 	return false;	
-}
-
-size_t maxTetrominoWidth(const string sTetromino) {
-	long long int m = 0;
-	for (int tp = 0; tp < 4; tp++) {
-		m = max(m, std::count(sTetromino.begin()+tp*4, sTetromino.begin()+4+tp*4, 'X'));
-	}
-	return m;
-}
-
-size_t maxTetrominoHeight(const string sTetromino) {
-	size_t m = 4;
-	for (int tp = 0; tp < 4; tp++) {
-		if (std::count(sTetromino.begin()+tp*4, sTetromino.begin()+4+tp*4, 'X') == 0) {m--;}
-	}
-	return m;
 }
 
 // Will assume 4x4 tetromino until I can make the program work. Then I will expand code for iti
@@ -98,40 +108,40 @@ int main() {
 	
 	// To assure accurate collission physics and to simplify application all tetromino Xs should be in the top left.	
 	// TODO Alternative would be basically retooling the program to accept variable shape tetrominos.
-	tetrominoList[0].s.append("X...");
-	tetrominoList[0].s.append("X...");
-	tetrominoList[0].s.append("X...");
-	tetrominoList[0].s.append("X...");
-	tetrominoList[0].height = maxTetrominoHeight(tetrominoList[0].s);
-	tetrominoList[0].width = maxTetrominoWidth(tetrominoList[0].s);
+	tetrominoList[0].append("X...");
+	tetrominoList[0].append("X...");
+	tetrominoList[0].append("X...");
+	tetrominoList[0].append("X...");
 
-	tetrominoList[1].s.append("XX..");
-	tetrominoList[1].s.append("XX..");
-	tetrominoList[1].s.append("....");
-	tetrominoList[1].s.append("....");
-	tetrominoList[1].height = maxTetrominoHeight(tetrominoList[1].s);
-	tetrominoList[1].width = maxTetrominoWidth(tetrominoList[1].s);
+	tetrominoList[1].append("XX..");
+	tetrominoList[1].append("XX..");
+	tetrominoList[1].append("....");
+	tetrominoList[1].append("....");
 
-	tetrominoList[2].s.append(".X..");
-	tetrominoList[2].s.append("XX..");
-	tetrominoList[2].s.append("X...");
-	tetrominoList[2].s.append("....");
-	tetrominoList[2].height = maxTetrominoHeight(tetrominoList[2].s);
-	tetrominoList[2].width = maxTetrominoWidth(tetrominoList[2].s);
+	tetrominoList[2].append(".X..");
+	tetrominoList[2].append("XX..");
+	tetrominoList[2].append("X...");
+	tetrominoList[2].append("....");
 
-	tetrominoList[3].s.append("X...");
-	tetrominoList[3].s.append("XX..");
-	tetrominoList[3].s.append(".X..");
-	tetrominoList[3].s.append("....");
-	tetrominoList[3].height = maxTetrominoHeight(tetrominoList[3].s);
-	tetrominoList[3].width = maxTetrominoWidth(tetrominoList[3].s);
+	tetrominoList[3].append("X...");
+	tetrominoList[3].append("XX..");
+	tetrominoList[3].append(".X..");
+	tetrominoList[3].append("....");
 
-	tetrominoList[4].s.append("XX..");
-	tetrominoList[4].s.append("X...");
-	tetrominoList[4].s.append("X...");
-	tetrominoList[4].s.append("....");
-	tetrominoList[4].height = maxTetrominoHeight(tetrominoList[4].s);
-	tetrominoList[4].width = maxTetrominoWidth(tetrominoList[4].s);
+	tetrominoList[4].append("XX..");
+	tetrominoList[4].append("X...");
+	tetrominoList[4].append("X...");
+	tetrominoList[4].append("....");
+
+	tetrominoList[5].append("XX..");
+	tetrominoList[5].append(".X..");
+	tetrominoList[5].append(".X..");
+	tetrominoList[5].append("....");
+
+	tetrominoList[6].append("XXX.");
+	tetrominoList[6].append(".X..");
+	tetrominoList[6].append("....");
+	tetrominoList[6].append("....");
 
 	// Field Boundary
 	int field[fieldHeight][fieldWidth];
@@ -151,33 +161,34 @@ int main() {
 
 	// Game Logic
 	bool bGameOver = false;
-	// int nSpeedCount = 0;
-	// bool bForceDown = false;
-	// int nSpeed = 20;
+	bool bNextPiece = false;
 	bool bKey[4];
 	unsigned char vkInputKeys[4] = {VK_RIGHT, VK_LEFT, VK_DOWN, VK_Z};	
 	int nCurrentX = fieldWidth / 2;
 	int nCurrentY = 0;
-	int nRotation = 0;
 	int nTetromino = (rand() + 1) % tetrominoList.size();
-	tetromino piece = tetrominoList[nTetromino];
+	Tetromino piece(tetrominoList[nTetromino]);
 
 	while (!bGameOver) {
 
 		// Timing
 		std::this_thread::sleep_for(200ms);
-		// nSpeedCount++;
-		// bForceDown = (nSpeedCount == nSpeed);
+
+		// Cleaning Game Logic for next piece
+		if (bNextPiece) {
+			nCurrentX = fieldWidth / 2;
+			nCurrentY = 0;
+			nTetromino = (rand() + 1) % tetrominoList.size();
+			bNextPiece = false;
+		}
 
 		// Input
 		// GetAsyncKeyState returns a short with the most significant bit set i.e. 0x8000
 		for (int k = 0; k < 4; k++) {bKey[k] = (0x8000 & GetAsyncKeyState(vkInputKeys[k]));}
-		if (bKey[0] == true && bDoesItFit(tetrominoList[nTetromino], nRotation, nCurrentX, nCurrentY, vkInputKeys[0])) {nCurrentX++;}
-		if (bKey[1] == true && bDoesItFit(tetrominoList[nTetromino], nRotation, nCurrentX, nCurrentY, vkInputKeys[1])) {nCurrentX--;}
-		if (bKey[2] == true && bDoesItFit(tetrominoList[nTetromino], nRotation, nCurrentX, nCurrentY, vkInputKeys[2])) {nCurrentY++;} 
-		if (bKey[3] == true && bDoesItFit(tetrominoList[nTetromino], nRotation, nCurrentX, nCurrentY, vkInputKeys[3])) {rotateTetromino(piece, tetrominoList[nTetromino], ++nRotation);}
-		
-		// for (int i = 0; i < 16; i++) {screen[screenWidth + i] = piece.s[i] == 'X' ? fieldSymbolLegend[nTetromino + 1] : ' ';}
+		if (bKey[0] == true && bDoesItFit(piece, nCurrentX, nCurrentY, vkInputKeys[0])) {nCurrentX++;}
+		if (bKey[1] == true && bDoesItFit(piece, nCurrentX, nCurrentY, vkInputKeys[1])) {nCurrentX--;}
+		if (bKey[2] == true && bDoesItFit(piece, nCurrentX, nCurrentY, vkInputKeys[2])) {nCurrentY++;} 
+		if (bKey[3] == true && bDoesItFit(piece, nCurrentX, nCurrentY, vkInputKeys[3])) {piece.rotate();}
 		
 		// Redraw field
 		// FIXME: would delete the lines that are left in the end.
@@ -188,9 +199,9 @@ int main() {
 		}
 
 		// Tetromino
-		for (int y = 0; y < 4; y++) {
-			for (int x = 0; x < 4; x++) {
-				field[y + nCurrentY][x + nCurrentX] = piece.s[y * 4 + x] == 'X' ? nTetromino + 1 : field[y + nCurrentY][x + nCurrentX];
+		for (size_t y = 0; y < piece.height; y++) {
+			for (size_t x = 0; x < piece.width; x++) {
+				field[y + nCurrentY][x + nCurrentX] = piece.s[y*piece.width + x] == 'X' ? nTetromino + 1 : field[y + nCurrentY][x + nCurrentX];
 			}
 		}
 	
@@ -201,9 +212,16 @@ int main() {
 			}
 		}
 
-		// FIXME not spinning
-		screen[0] = nCurrentX + '0';
-		screen[1] = nCurrentY + '0';
+		int i = fieldWidth;
+		for (size_t y = 0; y < piece.height; y++) {
+			for (size_t x = 0; x < piece.width; x++) {
+				screen[i++] = piece.s[y*piece.width + x];
+			}
+		}
+		screen[0] = piece.width + '0';
+		screen[1] = piece.height + '0';
+		screen[3] = nCurrentX + '0';
+		screen[4] = nCurrentY + '0';
 		// screen[0] = bKey[0] == true && bDoesItFit(piece, nCurrentX, nCurrentY, vkInputKeys[0]) ? 'R' : ' ';
 		// screen[1] = bKey[1] == true && bDoesItFit(tetrominoList[nTetromino], nRotation, nCurrentX, nCurrentY, vkInputKeys[1]) ? 'L' : ' ';
 		// screen[2] = bKey[2] == true && bDoesItFit(tetrominoList[nTetromino], nRotation, nCurrentX, nCurrentY, vkInputKeys[2]) ? 'D' : ' ';
