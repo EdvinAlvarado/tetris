@@ -14,6 +14,10 @@ using namespace std::chrono;
 using namespace std::chrono_literals;
 
 #define VK_Z 0x5A // Windows Virtual-Key Z
+#define FIELD_WIDTH 12
+#define FIELD_HEIGHT 18
+#define SCREEN_WIDTH 30
+#define SCREEN_HEIGHT 70
 //---------------------------------------------------------------------------------------------------------
 class Tetromino {
 	public:
@@ -78,25 +82,21 @@ string Tetromino::trimTetromino(string sTetromino) {
 // Even 4x4 tetrominos only
 // TODO handle any nxn size.
 std::array<string, 7> tetrominoList;
-const int fieldWidth = 12;
-const int fieldHeight = 18;
-const int screenWidth = 30;
-const int screenHeight = 70;
 char fieldSymbolLegend[] = " ABCDEFG=#";
 
 bool bDoesItFit(Tetromino tetromino, int nPosX, int nPosY, unsigned char action = VK_DOWN) {
 	switch(action) {
 		case VK_DOWN:
-			return nPosY + tetromino.height <= fieldHeight - 2;
+			return nPosY + tetromino.height <= FIELD_HEIGHT - 2;
 			break;
 		case VK_RIGHT:
-			return nPosX + tetromino.width - 1 < fieldWidth - 2;
+			return nPosX + tetromino.width - 1 < FIELD_WIDTH - 2;
 			break;
 		case VK_LEFT:
 			return nPosX > 1;
 			break;
 		case VK_Z:
-			return (nPosY + tetromino.width <= fieldHeight - 2) && (nPosX + tetromino.height < fieldWidth - 2) && (nPosX >= 1);
+			return (nPosY + tetromino.width <= FIELD_HEIGHT - 2) && (nPosX + tetromino.height < FIELD_WIDTH - 2) && (nPosX >= 1);
 			break;
 	}
 	return false;	
@@ -144,17 +144,17 @@ int main() {
 	tetrominoList[6].append("....");
 
 	// Field Boundary
-	int field[fieldHeight][fieldWidth];
-	for (int x = 0; x < fieldWidth; x++) {
-		for (int y = 0; y < fieldHeight; y++) {
-			field[y][x] = (x == 0 || x == fieldWidth - 1 || y == fieldHeight - 1) ? 9 : 0;
+	int field[FIELD_HEIGHT][FIELD_WIDTH];
+	for (int x = 0; x < FIELD_WIDTH; x++) {
+		for (int y = 0; y < FIELD_HEIGHT; y++) {
+			field[y][x] = (x == 0 || x == FIELD_WIDTH - 1 || y == FIELD_HEIGHT - 1) ? 9 : 0;
 		}
 	}
 
 	// Create Screen Buffer
 	// screen needs to be onedimensional to use WriteConsoleOutputCharacter(...)
-	char screen[screenWidth*screenHeight]; 
-	for (int i = 0; i < screenHeight*screenWidth; i++) {screen[i] = ' ';}
+	char screen[SCREEN_WIDTH*SCREEN_HEIGHT]; 
+	for (int i = 0; i < SCREEN_HEIGHT*SCREEN_WIDTH; i++) {screen[i] = ' ';}
 	HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 	SetConsoleActiveScreenBuffer(hConsole);
 	DWORD dwBytesWritten = 0;
@@ -164,7 +164,7 @@ int main() {
 	bool bNextPiece = false;
 	bool bKey[4];
 	unsigned char vkInputKeys[4] = {VK_RIGHT, VK_LEFT, VK_DOWN, VK_Z};	
-	int nCurrentX = fieldWidth / 2;
+	int nCurrentX = FIELD_WIDTH / 2;
 	int nCurrentY = 0;
 	int nTetromino = (rand() + 1) % tetrominoList.size();
 	Tetromino piece(tetrominoList[nTetromino]);
@@ -176,7 +176,7 @@ int main() {
 
 		// Cleaning Game Logic for next piece
 		if (bNextPiece) {
-			nCurrentX = fieldWidth / 2;
+			nCurrentX = FIELD_WIDTH / 2;
 			nCurrentY = 0;
 			nTetromino = (rand() + 1) % tetrominoList.size();
 			bNextPiece = false;
@@ -192,9 +192,9 @@ int main() {
 		
 		// Redraw field
 		// FIXME: would delete the lines that are left in the end.
-		for (int x = 0; x < fieldWidth; x++) {
-			for (int y = 0; y < fieldHeight; y++) {
-				field[y][x] = (x == 0 || x == fieldWidth - 1 || y == fieldHeight - 1) ? 9 : 0;
+		for (int x = 0; x < FIELD_WIDTH; x++) {
+			for (int y = 0; y < FIELD_HEIGHT; y++) {
+				field[y][x] = (x == 0 || x == FIELD_WIDTH - 1 || y == FIELD_HEIGHT - 1) ? 9 : 0;
 			}
 		}
 
@@ -206,13 +206,13 @@ int main() {
 		}
 	
 		// Draw Field offset to (2,2)
-		for (int y = 0; y < fieldHeight; y++) {
-			for (int x = 0; x < fieldWidth; x++) {
-				screen[(y+2)*screenWidth + (x+2)] = fieldSymbolLegend[field[y][x]];
+		for (int y = 0; y < FIELD_HEIGHT; y++) {
+			for (int x = 0; x < FIELD_WIDTH; x++) {
+				screen[(y+2)*SCREEN_WIDTH + (x+2)] = fieldSymbolLegend[field[y][x]];
 			}
 		}
 
-		int i = fieldWidth;
+		int i = FIELD_WIDTH;
 		for (size_t y = 0; y < piece.height; y++) {
 			for (size_t x = 0; x < piece.width; x++) {
 				screen[i++] = piece.s[y*piece.width + x];
@@ -228,7 +228,7 @@ int main() {
 		// screen[3] = bKey[3] == true && bDoesItFit(tetrominoList[nTetromino], nRotation, nCurrentX, nCurrentY, vkInputKeys[3]) ? 'Z' : ' ';
 	
 		// Display Frame
-		WriteConsoleOutputCharacter(hConsole, screen, screenWidth * screenHeight, {0, 0}, &dwBytesWritten);
+		WriteConsoleOutputCharacter(hConsole, screen, SCREEN_WIDTH * SCREEN_HEIGHT, {0, 0}, &dwBytesWritten);
 	}
 	CloseHandle(hConsole);
 	cout << "Game Over!!" << endl;
