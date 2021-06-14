@@ -1,2 +1,22 @@
-main: main.cpp
-	g++ -std=c++14 -Wall -g main.cpp -o main.exe
+CC = g++
+WFLAGS = -Wall -Wextra 
+CPPFLAGS = -std=c++14 $(WFLAGS)
+LDFLAGS = -lSDL2
+OBJECT = main.o tetris.o IO.o board.o
+
+tetris: $(OBJECT)
+	$(CC) $(CPPFLAGS) $(LDFLAGS) -o tetris $(OBJECT)
+
+main.o: main.cpp tetris.hpp IO.hpp board.hpp
+	$(CC) $(CPPFLAGS) -c main.cpp
+
+tetris.o: tetris.cpp tetris.hpp
+	$(CC) $(CPPFLAGS) -c tetris.cpp
+
+IO.o: IO.cpp IO.hpp
+	$(CC) $(CPPFLAGS) -c IO.cpp
+
+board.o: board.cpp board.hpp tetris.hpp
+	$(CC) $(CPPFLAGS) -c IO.cpp
+clean:
+	rm *.o tetris *~ 
