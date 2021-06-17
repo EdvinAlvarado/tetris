@@ -73,5 +73,5 @@ Tetromino::Tetromino(int piece_number) {
 			tetro[y][x] = pieces[piece_number][y][x];
 		}
 	}
-	type = piece_number;
+	type = piece_number + 1;
 }

@@ -3,11 +3,13 @@
 
 #include <SDL2/SDL.h>
 
-// TODO consider not hardcoding dimensions 
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
 
-enum color {RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, WHITE, BLACK, COLOR_MAX}; // one color for each tetromino plus black
+// TODO consider not hardcoding dimensions 
+#define SCREEN_WIDTH 640 // reminder of board.hpp
+#define SCREEN_HEIGHT 480 // reminder of board.hpp
+#include "board.hpp" // Needs to be under here as board.hpp uses the definition above.
+
+enum color {BLACK, RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, WHITE, COLOR_MAX}; // one color for each tetromino plus black
 enum initErrors {INIT_PASS, INIT_ERROR, WINDOW_ERROR};
 
 class IO {
@@ -30,7 +32,7 @@ class IO {
 		SDL_Rect sdlRect;
 		SDL_Rect makeRect(int posX, int posY, int width, int height);
 		void drawRect(enum color pColor);
-		void printBoard(Board gameBoard, int pX, int pY, enum color pColor)
+		void printBoard(Board gameBoard);
 };
 #endif
 

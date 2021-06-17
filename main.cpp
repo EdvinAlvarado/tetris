@@ -36,8 +36,6 @@ int main() {
  	while (!bGameOver) {
 		io.wait(50);
  		io.clearScreen(BLACK);
-		io.sdlRect = io.makeRect(nPosX, nPosY, BLOCK_SIZE, BLOCK_SIZE);
-		io.drawRect(RED);
 		// Handle events queue
  		while (SDL_PollEvent(&io.sdlEvent) != 0) {
 			// User requests quit
@@ -45,13 +43,13 @@ int main() {
 			else if (io.sdlEvent.type == SDL_KEYDOWN) {
 				switch (io.sdlEvent.key.keysym.sym) {
 					case SDLK_DOWN:
-						nPosY++; 
+						nPosY+=BLOCK_SIZE/PIECE_SIZE; 
 						break;
 					case SDLK_LEFT:
-						nPosX--;
+						nPosX-=BLOCK_SIZE/PIECE_SIZE;
 						break;
 					case SDLK_RIGHT:
-						nPosX++;
+						nPosX+=BLOCK_SIZE/PIECE_SIZE;
 						break;
 					case SDLK_z:
 						piece.rotate();
@@ -59,11 +57,17 @@ int main() {
 				}
 			}
 		}
+		board.writeBoard(nPosX, nPosY, piece);
+		io.printBoard(board);
 		io.updateScreen();
  	}
-
+	for (auto it = board.board.begin(); it < board.board.end(); it++) {
+		for (auto itt = it->begin(); itt < it->end(); itt++) {
+			std::cout << *itt << " ";
+		}
+		std::cout << std::endl;
+	}
 	// io.wait(1000);
-	// TODO underfine reference in main.cpp?
 	// std::this_thread::sleep_for(5000ms);
 	cout << "Game Over!!" << endl;
 	return 0;

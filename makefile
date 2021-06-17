@@ -13,10 +13,11 @@ main.o: main.cpp tetris.hpp IO.hpp board.hpp
 tetris.o: tetris.cpp tetris.hpp
 	$(CC) $(CPPFLAGS) -c tetris.cpp
 
-IO.o: IO.cpp IO.hpp
+IO.o: IO.cpp IO.hpp board.hpp
 	$(CC) $(CPPFLAGS) -c IO.cpp
 
-board.o: board.cpp board.hpp tetris.hpp
-	$(CC) $(CPPFLAGS) -c IO.cpp
+board.o: board.cpp board.hpp tetris.hpp IO.hpp
+	$(CC) $(CPPFLAGS) -c board.cpp
+
 clean:
 	rm *.o tetris *~ 

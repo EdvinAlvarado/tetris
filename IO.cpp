@@ -1,7 +1,7 @@
 #include "IO.hpp"
 #include <iostream>
 #include <SDL2/SDL.h>
-
+#include "board.hpp"
 
 
 // TODO Consider adding int returns for error handling.
@@ -104,4 +104,11 @@ void IO::drawRect(enum color pColor) {
 	};
  }
 
-void IO::printBoard()
+void IO::printBoard(Board gameBoard) {
+	for (int y = 0; y < SCREEN_HEIGHT; y+=BLOCK_SIZE) {
+		for (int x = 0; x < SCREEN_WIDTH; x+=BLOCK_SIZE) {
+			sdlRect = makeRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
+			drawRect(static_cast<color>(gameBoard.board[y/BLOCK_SIZE][x/BLOCK_SIZE]));
+		}
+	}
+}
