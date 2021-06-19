@@ -22,14 +22,13 @@ int IO::initGraph() {
 	}
 
 	sdlScreen = SDL_GetWindowSurface(sdlWindow);
-	initColors();
 	return INIT_PASS;
 }
 
 // Initialization
-// TODO move initcolors over here
 IO::IO() {
 	initGraph();
+	initColors();
 }
 
 // Clear the screen to black
