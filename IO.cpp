@@ -27,6 +27,7 @@ int IO::initGraph() {
 }
 
 // Initialization
+// TODO move initcolors over here
 IO::IO() {
 	initGraph();
 }
