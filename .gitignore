@@ -35,3 +35,6 @@
 *.xlsx
 *~
 *.vim
+*.swp
+tetris
+tasks.json
