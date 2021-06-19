@@ -5,7 +5,7 @@
 #include <algorithm>
 
 bool Board::checkLineFilled(int line) {
-	if (line < BOARD_HEIGHT) {
+	if (line < BOARD_HEIGHT || line >= 0) {
 		return std::find(board[line].begin(), board[line].end(), 0) == board[line].end();
 	} else {std::cerr << "Out of bound line" << std::endl;}
 	return false;
