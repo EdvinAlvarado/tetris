@@ -27,7 +27,7 @@ int main() {
 	
 	// Game Logic
 	bool bGameOver = false;
-	int nPosX = SCREEN_WIDTH / 2; // TODO get screen dimension accesible from here and const
+	int nPosX = BOARD_WIDTH / 2; // TODO get screen dimension accesible from here and const
 	int nPosY = 0;
 	int nTetromino = rand() % 7;
 	
@@ -42,18 +42,19 @@ int main() {
 			// User requests quit
 			if (io.sdlEvent.type == SDL_QUIT) {bGameOver = true;}
 			else if (io.sdlEvent.type == SDL_KEYDOWN) {
+				boolBlocked bBlock = board.collisionChecker(nPosX, nPosY, piece);
 				switch (io.sdlEvent.key.keysym.sym) {
 					case SDLK_DOWN:
-						nPosY+=BLOCK_SIZE/PIECE_SIZE; 
+						if (!bBlock.down) {nPosY++;}
 						break;
 					case SDLK_LEFT:
-						nPosX-=BLOCK_SIZE/PIECE_SIZE;
+						if (!bBlock.left) {nPosX--;}
 						break;
 					case SDLK_RIGHT:
-						nPosX+=BLOCK_SIZE/PIECE_SIZE;
+						if (!bBlock.right) {nPosX++;}
 						break;
 					case SDLK_z:
-						piece.rotate();
+						if (!bBlock.rotate) {piece.rotate();}
 						break;
 				}
 			}
@@ -62,6 +63,8 @@ int main() {
 		io.printBoard(board);
 		io.updateScreen();
  	}
+
+	// TODO debugging only
 	for (auto it = board.board.begin(); it < board.board.end(); it++) {
 		for (auto itt = it->begin(); itt < it->end(); itt++) {
 			std::cout << *itt << " ";
