@@ -3,9 +3,7 @@
 
 #include <array>
 #include "tetris.hpp"
-
-#define SCREEN_WIDTH 640 // reminder of IO.hpp
-#define SCREEN_HEIGHT 480 // remidner of IO.hpp
+#include "screen.hpp"
 #define BLOCK_SIZE 10 // Width and Height of each block of a piece
 #define BOARD_WIDTH SCREEN_WIDTH/BLOCK_SIZE // Board width in blocks
 #define BOARD_HEIGHT SCREEN_HEIGHT/BLOCK_SIZE // Board height in blocks

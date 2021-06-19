@@ -11,6 +11,7 @@
 #include <array>
 #include <cmath>
 #include <algorithm>
+#include "screen.hpp"
 #include "tetris.hpp"
 #include "IO.hpp"
 #include "board.hpp"
