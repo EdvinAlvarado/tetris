@@ -23,26 +23,26 @@ using namespace std::chrono;
 using namespace std::chrono_literals;
 // Will assume 4x4 tetromino until I can make the program work. Then I will expand code for iti
 int main() {
-	srand (time(NULL));	
+	srand (time(0));	
 	
 	// Game Logic
 	bool bGameOver = false;
-	int nPosX = BOARD_WIDTH / 2; // TODO get screen dimension accesible from here and const
+	int nPosX = BOARD_WIDTH / 2; 
 	int nPosY = 0;
-	int nTetromino = rand() % 7;
-	
-	Tetromino piece(nTetromino);
+
+	unsigned int score = 0;	
+	Tetromino piece(rand() % 7);
 	Board board;
 	IO io;
  	while (!bGameOver) {
-		io.wait(50);
+		io.wait(500);
  		io.clearScreen(BLACK);
+		boolBlocked bBlock = board.collisionChecker(nPosX, nPosY, piece);
 		// Handle events queue
  		while (SDL_PollEvent(&io.sdlEvent) != 0) {
 			// User requests quit
 			if (io.sdlEvent.type == SDL_QUIT) {bGameOver = true;}
 			else if (io.sdlEvent.type == SDL_KEYDOWN) {
-				boolBlocked bBlock = board.collisionChecker(nPosX, nPosY, piece);
 				switch (io.sdlEvent.key.keysym.sym) {
 					case SDLK_DOWN:
 						if (!bBlock.down) {nPosY++;}
