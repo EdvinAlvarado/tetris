@@ -7,7 +7,7 @@ OBJECT = main.o tetris.o IO.o board.o
 tetris: $(OBJECT)
 	$(CC) $(CPPFLAGS) $(LDFLAGS) -o tetris $(OBJECT)
 
-main.o: main.cpp tetris.hpp IO.hpp board.hpp
+main.o: main.cpp tetris.hpp IO.hpp board.hpp screen.hpp
 	$(CC) $(CPPFLAGS) -c main.cpp
 
 tetris.o: tetris.cpp tetris.hpp

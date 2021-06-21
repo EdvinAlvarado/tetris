@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include "board.hpp"
+#include "screen.hpp"
 
 
 // TODO Consider adding int returns for error handling.
