@@ -56,3 +56,25 @@ boolBlocked Board::collisionChecker(int pX, int pY, Tetromino piece) {
 	}
 	return bDir;
 }
+
+void Board::rollLines(int delLine) {
+	for (int line = 0; line < delLine; line++) {
+		switch(line) {
+			case 0:
+				std::fill(backBoard[line].begin(), backBoard[line].end(), 0); break;
+			default:
+				backBoard[line+1] = backBoard[line];
+		}
+	}
+}
+
+unsigned int Board::filledLineCleaner() {
+	unsigned int sc = 0;
+	for (int line = 0; line < BOARD_HEIGHT; line++) {
+		if (checkLineFilled(line)) {
+			sc++;
+			rollLines(line);
+		}
+	}
+	return sc;
+}

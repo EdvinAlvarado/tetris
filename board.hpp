@@ -20,11 +20,13 @@ struct boolBlocked {
 class Board {
 	private:
 		std::array<std::array<int,BOARD_WIDTH>,BOARD_HEIGHT> backBoard; // contains the pieces.
+		bool checkLineFilled(int line);
+		void rollLines(int delLine); // deletes the content of line and rolls all the lines on top down.
 	public:
 		void writeBoard(int pX, int pY, Tetromino piece);
 		void writeBackBoard(int pX, int pY, Tetromino piece);
-		bool checkLineFilled(int line);
 		std::array<std::array<int,BOARD_WIDTH>,BOARD_HEIGHT> board; // contains the pieces.
 		boolBlocked collisionChecker(int pX, int pY, Tetromino piece);
+		unsigned int filledLineCleaner();
 };
 #endif
