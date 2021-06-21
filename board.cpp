@@ -4,6 +4,14 @@
 #include "tetris.hpp"
 #include <algorithm>
 
+bool Board::checkPosInBound(int pX, int pY) {
+	if (pY < BOARD_HEIGHT || pX < BOARD_WIDTH || pX >= 0 || pY >= 0) {return true;}
+	else {
+		return false;
+		std::cerr << "Out of bound position: (" << pX << "," << pY << ")" << std::endl;
+	}
+}
+
 bool Board::checkLineFilled(int line) {
 	if (line < BOARD_HEIGHT || line >= 0) {
 		return std::find(board[line].begin(), board[line].end(), 0) == board[line].end();
@@ -15,7 +23,9 @@ void Board::writeBoard(int pX, int pY, Tetromino piece) {
 	board = backBoard;
 	for (int y = 0; y < PIECE_SIZE; y++) {
 		for (int x = 0; x < PIECE_SIZE; x++) {
-			if (piece.tetro[y][x] > 0) {board[y+pY][x+pX] = piece.type;}
+			if (piece.tetro[y][x] > 0) {
+				if (checkPosInBound(x+pX, y+pY)) {board[y+pY][x+pX] = piece.type;} 
+			}
 		}
 	}
 }
@@ -23,7 +33,9 @@ void Board::writeBoard(int pX, int pY, Tetromino piece) {
 void Board::writeBackBoard(int pX, int pY, Tetromino piece) {
 	for (int y = 0; y < PIECE_SIZE; y++) {
 		for (int x = 0; x < PIECE_SIZE; x++) {
-			if (piece.tetro[y][x] > 0) {backBoard[y+pY][x+pX] = piece.type;}
+			if (piece.tetro[y][x] > 0) {
+				if (checkPosInBound(x+pX, y+pY)) {backBoard[y+pY][x+pX] = piece.type;}
+			}
 		}
 	}
 }
@@ -34,6 +46,7 @@ boolBlocked Board::collisionChecker(int pX, int pY, Tetromino piece) {
 	for (int y = 0; y < PIECE_SIZE; y++) {
 		for (int x = 0; x < PIECE_SIZE; x++) {
 			if (piece.tetro[y][x] > 0) {
+				checkPosInBound(x+pX, y+pY);
 				if (x+pX <= 0) {bDir.left = true;}
 				else if (backBoard[y+pY][x+pX-1] > 0) {bDir.left = true;}
 				if (x+pX >= BOARD_WIDTH-1) {bDir.right = true;}
