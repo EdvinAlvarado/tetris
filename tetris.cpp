@@ -4,8 +4,8 @@
 
 void Tetromino::rotate() {
 	std::array<std::array<int,5>,5> rotatedTetro;
-	for (int y = 0; y < tetro.size(); y++) {
-		for (int x = 0; x < tetro[0].size(); x++) {
+	for (size_t y = 0; y < tetro.size(); y++) {
+		for (size_t x = 0; x < tetro[0].size(); x++) {
 			rotatedTetro[y][x] = tetro[4-x][y];
 		}
 	}	
