@@ -56,7 +56,9 @@ int IO::getScreenWidth() {
 }
 
 // Update screen
-void IO::updateScreen() {
+void IO::updateScreen(enum color pColor, Board gameBoard) {
+	clearScreen(pColor);
+	printBoard(gameBoard);
 	SDL_UpdateWindowSurface(sdlWindow);
 }
 
@@ -98,7 +100,6 @@ SDL_Rect IO::makeRect(int posX, int posY, int width, int height) {
 }
 
 // Draws a rectangle of any color.
-// TODO erase after testing
 void IO::drawRect(enum color pColor) {
 	if (SDL_FillRect(sdlScreen, &sdlRect, rgbColors[pColor]) < 0){
 		std::cerr << "Filling rectangle of a color failed: " << SDL_GetError() << std::endl;
