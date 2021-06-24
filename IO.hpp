@@ -23,13 +23,14 @@ class IO {
 	public:
 		IO ();
 		void clearScreen(enum color pColor);
-		void updateScreen();
+		void updateScreen(enum color pColor, Board gameBoard);
 		// void drawScreen(int pX1, int pY1, int pX2, int pY2, enum color pColor);
 		int getScreenHeight();
 		int getScreenWidth();
 		void wait(int mseconds);
 		SDL_Event sdlEvent;
 		SDL_Rect sdlRect;
+		void clearEvent();
 };
 #endif
 

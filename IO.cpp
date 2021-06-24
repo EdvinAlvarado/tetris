@@ -114,3 +114,7 @@ void IO::printBoard(Board gameBoard) {
 		}
 	}
 }
+
+void IO::clearEvent() {
+	while (SDL_PollEvent(&sdlEvent) != 0) {continue;} 
+}
