@@ -109,20 +109,20 @@ int main() {
 			nPosY = 0;
 			piece = Tetromino(rand() % 7);
 		}
+		io.wait(250);
 		board.writeBoard(nPosX, nPosY, piece);
-		io.printBoard(board);
-		io.updateScreen();
+		io.updateScreen(BLACK, board);
  	}
 
 	// TODO debugging only
-	// for (auto it = board.board.begin(); it < board.board.end(); it++) {
-	// 	for (auto itt = it->begin(); itt < it->end(); itt++) {
-	// 		std::cout << *itt << " ";
-	// 	}
-	// 	std::cout << std::endl;
-	// }
+	for (auto it = board.board.begin(); it < board.board.end(); it++) {
+		for (auto itt = it->begin(); itt < it->end(); itt++) {
+			std::cout << *itt << " ";
+		}
+		std::cout << std::endl;
+	}
 	// io.wait(1000);
 	// std::this_thread::sleep_for(5000ms);
-	cout << "Game Over!!" << " score:" << score <<  endl;
+	cout << "Game Over!!" << " score: " << score <<  endl;
 	return 0;
 }
