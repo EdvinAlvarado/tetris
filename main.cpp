@@ -34,30 +34,70 @@ int main() {
 	Tetromino piece(rand() % 7);
 	Board board;
 	IO io;
+
  	while (!bGameOver) {
-		io.wait(500);
- 		io.clearScreen(BLACK);
 		boolBlocked bBlock = board.collisionChecker(nPosX, nPosY, piece);
 		// Handle events queue
  		while (SDL_PollEvent(&io.sdlEvent) != 0) {
 			// User requests quit
 			if (io.sdlEvent.type == SDL_QUIT) {bGameOver = true;}
+			// Handles all key presses
 			else if (io.sdlEvent.type == SDL_KEYDOWN) {
 				switch (io.sdlEvent.key.keysym.sym) {
 					case SDLK_DOWN:
-						if (!bBlock.down) {nPosY++;}
+						if (!bBlock.down) {
+							nPosY++;
+							// Provides smooth(ish) tetris movements
+							// FIXME keeps going down for a while after letting the key go
+	 						while (SDL_PollEvent(&io.sdlEvent) != 0) {
+								if (io.sdlEvent.key.keysym.sym == SDLK_DOWN && !bBlock.down) {
+									nPosY++;
+									board.writeBoard(nPosX, nPosY, piece);
+									io.updateScreen(BLACK, board);
+									bBlock = board.collisionChecker(nPosX, nPosY, piece);
+									io.wait(50);		
+								}
+								else {io.clearEvent();}
+							}					
+						}
 						break;
 					case SDLK_LEFT:
-						if (!bBlock.left) {nPosX--;}
+						if (!bBlock.left) {
+							nPosX--;
+							// Provides smooth(ish) tetris movements
+ 							while (SDL_PollEvent(&io.sdlEvent) != 0) {
+								if (io.sdlEvent.key.keysym.sym == SDLK_LEFT && !bBlock.left) {
+									nPosX--;
+									board.writeBoard(nPosX, nPosY, piece);
+									io.updateScreen(BLACK, board);
+									bBlock = board.collisionChecker(nPosX, nPosY, piece);
+									io.wait(50);		
+								}
+								else {io.clearEvent();}
+							}
+						}
 						break;
 					case SDLK_RIGHT:
-						if (!bBlock.right) {nPosX++;}
+						if (!bBlock.right) {
+							nPosX++;
+							// Provides smooth(ish) tetris movements
+							while (SDL_PollEvent(&io.sdlEvent) != 0) {
+								if (io.sdlEvent.key.keysym.sym == SDLK_RIGHT && !bBlock.right) {
+									nPosX++;
+									board.writeBoard(nPosX, nPosY, piece);
+									io.updateScreen(BLACK, board);
+									bBlock = board.collisionChecker(nPosX, nPosY, piece);
+									io.wait(50);		
+								}
+								else {io.clearEvent();}
+							}					
+						}
 						break;
 					case SDLK_z:
 						if (!bBlock.rotate) {piece.rotate();}
 						break;
 				}
- 				while (SDL_PollEvent(&io.sdlEvent) != 0) {continue;} // avoids unncessary presses besides quitting
+				io.clearEvent();
 			}
 		}
 		
