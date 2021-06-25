@@ -56,6 +56,7 @@ boolBlocked Board::collisionChecker(int pX, int pY, Tetromino piece) {
 			}
 		}
 	}
+	// FIXME doesn't work well in borders
 	for (int r = 0; r < 3; r++) {// 4 rotations
 		pi.rotate();
 		for (int y = 0; y < PIECE_SIZE; y++) {
