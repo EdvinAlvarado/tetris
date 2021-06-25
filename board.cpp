@@ -71,17 +71,20 @@ boolBlocked Board::collisionChecker(int pX, int pY, Tetromino piece) {
 	return bDir;
 }
 
+// FIXME deletes everything except for the tetromino piece
+// Fixed?
 void Board::rollLines(int delLine) {
-	for (int line = 0; line < delLine; line++) {
+	for (int line = delLine; line >= 0; line++) {
 		switch(line) {
 			case 0:
 				std::fill(backBoard[line].begin(), backBoard[line].end(), 0); break;
 			default:
-				backBoard[line+1] = backBoard[line];
+				backBoard[line-1] = backBoard[line];
 		}
 	}
 }
 
+// FIXME causes seg fault
 unsigned int Board::filledLineCleaner() {
 	unsigned int sc = 0;
 	for (int line = 0; line < BOARD_HEIGHT; line++) {
