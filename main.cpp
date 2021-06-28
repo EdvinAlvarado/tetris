@@ -35,6 +35,7 @@ int main() {
 	Board board;
 	IO io;
 
+	Uint32 loopStartTime = SDL_GetTicks();
  	while (!bGameOver) {
 		boolBlocked bBlock = board.collisionChecker(nPosX, nPosY, piece);
 		// Handle events queue
@@ -101,15 +102,19 @@ int main() {
 			}
 		}
 		
-		if (!bBlock.down) {nPosY++;}
-		if (bBlock.down) {
-			score = board.filledLineCleaner();
-			board.writeBackBoard(nPosX, nPosY, piece);
-			nPosX = BOARD_WIDTH / 2; 
-			nPosY = 0;
-			piece = Tetromino(rand() % 7);
+		
+		if (io.elapsedTime(loopStartTime) > 500) {
+			loopStartTime = SDL_GetTicks();
+			if (!bBlock.down) {nPosY++;}
+			else {
+				score = board.filledLineCleaner();
+				board.writeBackBoard(nPosX, nPosY, piece);
+				nPosX = BOARD_WIDTH / 2; 
+				nPosY = 0;
+				piece = Tetromino(rand() % 7);
+			}	
 		}
-		io.wait(250);
+		io.wait(50);
 		board.writeBoard(nPosX, nPosY, piece);
 		io.updateScreen(BLACK, board);
  	}

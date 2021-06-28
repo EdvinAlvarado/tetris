@@ -31,6 +31,7 @@ class IO {
 		SDL_Event sdlEvent;
 		SDL_Rect sdlRect;
 		void clearEvent();
+		unsigned int elapsedTime(Uint32 startTime);
 };
 #endif
 

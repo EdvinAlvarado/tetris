@@ -115,6 +115,13 @@ void IO::printBoard(Board gameBoard) {
 	}
 }
 
+// SDL_PollEvent checks the events in queue and pops them out. Repeate function and sdlEvent will be empty.
 void IO::clearEvent() {
 	while (SDL_PollEvent(&sdlEvent) != 0) {continue;} 
+}
+
+// SDL_GetTicks gives you milliseconds since SDL libary started
+unsigned int IO::elapsedTime(Uint32 startTime) {
+	Uint32 currTime = SDL_GetTicks();
+	return static_cast<unsigned int>(currTime - startTime);
 }
