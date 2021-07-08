@@ -107,8 +107,8 @@ int main() {
 			loopStartTime = SDL_GetTicks();
 			if (!bBlock.down) {nPosY++;}
 			else {
-				score = board.filledLineCleaner();
 				board.writeBackBoard(nPosX, nPosY, piece);
+				score += board.filledLineCleaner(); // Needs to be under writeBackBoard so it cleans the piece
 				nPosX = BOARD_WIDTH / 2; 
 				nPosY = 0;
 				piece = Tetromino(rand() % 7);

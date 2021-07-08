@@ -57,34 +57,34 @@ boolBlocked Board::collisionChecker(int pX, int pY, Tetromino piece) {
 		}
 	}
 	// FIXME doesn't work well in borders
-	for (int r = 0; r < 3; r++) {// 4 rotations
-		pi.rotate();
-		for (int y = 0; y < PIECE_SIZE; y++) {
-			for (int x = 0; x < PIECE_SIZE; x++) {
-				if (pi.tetro[y][x] > 0) {
-					// left || right || down || overlap
-					if (x+pX <= 0 || x+pX >= BOARD_WIDTH-1 || y+pY >= BOARD_HEIGHT-1 || backBoard[y+pY][x+pX] > 0) {bDir.rotate = true;}
-				}
+	pi.rotate();
+	for (int y = 0; y < PIECE_SIZE; y++) {
+		for (int x = 0; x < PIECE_SIZE; x++) {
+			if (pi.tetro[y][x] > 0) {
+				// left || right || down || overlap
+				if (x+pX <= 0 || x+pX >= BOARD_WIDTH-1 || y+pY >= BOARD_HEIGHT-1 || backBoard[y+pY][x+pX] > 0) {bDir.rotate = true;}
 			}
 		}
 	}
 	return bDir;
 }
 
-// FIXME deletes everything except for the tetromino piece
-// Fixed?
-void Board::rollLines(int delLine) {
-	for (int line = delLine; line >= 0; line++) {
-		switch(line) {
-			case 0:
-				std::fill(backBoard[line].begin(), backBoard[line].end(), 0); break;
-			default:
-				backBoard[line-1] = backBoard[line];
+void Board::rollLines(int delLine) {	
+	if (delLine >= BOARD_HEIGHT || delLine < 0) {
+		std::cerr << "Out of bound line" << std::endl;
+	} else {
+		for (int line = delLine; line >= 0; line--) {
+			switch(line) {
+				case 0:
+					std::fill(backBoard[line].begin(), backBoard[line].end(), 0); break;
+				default:
+					backBoard[line] = backBoard[line-1];
+			}
 		}
 	}
 }
 
-// FIXME causes seg fault
+// Provides score
 unsigned int Board::filledLineCleaner() {
 	unsigned int sc = 0;
 	for (int line = 0; line < BOARD_HEIGHT; line++) {
