@@ -15,7 +15,6 @@ int IO::initGraph() {
 	}
 	atexit(SDL_Quit); // activates the function to clean initialized system when program exits normally.
 
-	// Set 640 x 480 video mode
 	sdlWindow = SDL_CreateWindow("Tetris", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (sdlWindow == NULL) {
 		std::cerr << "Window could not be created" << SDL_GetError() << std::endl;
@@ -106,11 +105,14 @@ void IO::drawRect(enum color pColor) {
 	};
  }
 
+// SCREEN_WIDTH and SCREEN_HEIGHT must be equal or greater than BOARD_WIDTH and BOARD_HEIGHT
 void IO::printBoard(Board gameBoard) {
-	for (int y = 0; y < SCREEN_HEIGHT; y+=BLOCK_SIZE) {
-		for (int x = 0; x < SCREEN_WIDTH; x+=BLOCK_SIZE) {
-			sdlRect = makeRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
-			drawRect(static_cast<color>(gameBoard.board[y/BLOCK_SIZE][x/BLOCK_SIZE]));
+	int x_offset = (SCREEN_WIDTH - BOARD_WIDTH*BLOCK_SIZE)/2;
+	int y_offset = (SCREEN_HEIGHT - BOARD_HEIGHT*BLOCK_SIZE)/2;
+	for (int y = 0; y < BOARD_HEIGHT; y++) {
+		for (int x = 0; x < BOARD_WIDTH; x++) {
+			sdlRect = makeRect(x*BLOCK_SIZE + x_offset, y*BLOCK_SIZE + y_offset, BLOCK_SIZE, BLOCK_SIZE);
+			drawRect(static_cast<color>(gameBoard.board[y][x]));
 		}
 	}
 }

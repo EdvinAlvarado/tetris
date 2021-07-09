@@ -13,7 +13,6 @@ void Tetromino::rotate() {
 }
 
 char fieldSymbolLegend[] = " ABCDEFG=#";
-// TODO translation when printing
 int pieces[7][5][5] = 
 {
 	{
