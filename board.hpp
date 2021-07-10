@@ -24,10 +24,12 @@ class Board {
 		void rollLines(int delLine); // deletes the content of line and rolls all the lines on top down.
 		bool checkPosInBound(int pX, int pY);
 	public:
+		Board();
 		void writeBoard(int pX, int pY, Tetromino piece);
 		void writeBackBoard(int pX, int pY, Tetromino piece);
 		std::array<std::array<int,BOARD_WIDTH>,BOARD_HEIGHT> board; // contains the pieces.
 		boolBlocked collisionChecker(int pX, int pY, Tetromino piece);
-		unsigned int filledLineCleaner();
+		void filledLineCleaner();
+		unsigned int score;
 };
 #endif

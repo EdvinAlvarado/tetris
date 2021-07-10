@@ -30,7 +30,6 @@ int main() {
 	int nPosX = BOARD_WIDTH / 2; 
 	int nPosY = 0;
 
-	unsigned int score = 0;	
 	Tetromino piece(rand() % 7);
 	Board board;
 	IO io;
@@ -108,7 +107,7 @@ int main() {
 			if (!bBlock.down) {nPosY++;}
 			else {
 				board.writeBackBoard(nPosX, nPosY, piece);
-				score += board.filledLineCleaner(); // Needs to be under writeBackBoard so it cleans the piece
+				board.filledLineCleaner(); // Needs to be under writeBackBoard so it cleans the piece
 				nPosX = BOARD_WIDTH / 2; 
 				nPosY = 0;
 				piece = Tetromino(rand() % 7);
@@ -128,6 +127,6 @@ int main() {
 	}
 	// io.wait(1000);
 	// std::this_thread::sleep_for(5000ms);
-	cout << "Game Over!!" << " score: " << score <<  endl;
+	cout << "Game Over!!" << " score: " << board.score <<  endl;
 	return 0;
 }

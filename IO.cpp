@@ -57,6 +57,7 @@ int IO::getScreenWidth() {
 // Update screen
 void IO::updateScreen(enum color pColor, Board gameBoard) {
 	clearScreen(pColor);
+	displayScreenOverlay();
 	printBoard(gameBoard);
 	SDL_UpdateWindowSurface(sdlWindow);
 }
@@ -85,6 +86,8 @@ void IO::initColors() {
 				rgbColors[pColor] = SDL_MapRGB(sdlScreen->format, 0xFF, 0xFF, 0x00); break;
 			case WHITE:
 				rgbColors[pColor] = SDL_MapRGB(sdlScreen->format, 0xFF, 0xFF, 0xFF); break;
+			case GREY:
+				rgbColors[pColor] = SDL_MapRGB(sdlScreen->format, 0x80, 0x80, 0x80); break;
 		}
 	}
 }
@@ -107,8 +110,6 @@ void IO::drawRect(enum color pColor) {
 
 // SCREEN_WIDTH and SCREEN_HEIGHT must be equal or greater than BOARD_WIDTH and BOARD_HEIGHT
 void IO::printBoard(Board gameBoard) {
-	int x_offset = (SCREEN_WIDTH - BOARD_WIDTH*BLOCK_SIZE)/2;
-	int y_offset = (SCREEN_HEIGHT - BOARD_HEIGHT*BLOCK_SIZE)/2;
 	for (int y = 0; y < BOARD_HEIGHT; y++) {
 		for (int x = 0; x < BOARD_WIDTH; x++) {
 			sdlRect = makeRect(x*BLOCK_SIZE + x_offset, y*BLOCK_SIZE + y_offset, BLOCK_SIZE, BLOCK_SIZE);
@@ -126,4 +127,13 @@ void IO::clearEvent() {
 unsigned int IO::elapsedTime(Uint32 startTime) {
 	Uint32 currTime = SDL_GetTicks();
 	return static_cast<unsigned int>(currTime - startTime);
+}
+
+void IO::displayScreenOverlay() {
+	if (x_offset > 0) {
+		sdlRect = makeRect(x_offset - BLOCK_SIZE, 0, BLOCK_SIZE, SCREEN_HEIGHT);
+		drawRect(GREY);
+		sdlRect = makeRect(x_offset + BOARD_WIDTH* BLOCK_SIZE, 0, BLOCK_SIZE, SCREEN_HEIGHT);
+		drawRect(GREY);
+	}
 }

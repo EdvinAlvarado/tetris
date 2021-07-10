@@ -7,7 +7,8 @@
 
 
 // one color for each tetromino plus black
-enum color {BLACK, RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, WHITE, COLOR_MAX}; 
+// colors 1 thru 7 will be the tetromino colors.
+enum color {BLACK, RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, WHITE, GREY, COLOR_MAX}; 
 enum initErrors {INIT_PASS, INIT_ERROR, WINDOW_ERROR};
 
 class IO {
@@ -20,6 +21,9 @@ class IO {
 		void printBoard(Board gameBoard);
 		SDL_Rect makeRect(int posX, int posY, int width, int height);
 		void drawRect(enum color pColor);
+		int x_offset = (SCREEN_WIDTH - BOARD_WIDTH*BLOCK_SIZE)/2;
+		int y_offset = (SCREEN_HEIGHT - BOARD_HEIGHT*BLOCK_SIZE)/2;
+		void displayScreenOverlay();
 	public:
 		IO ();
 		void clearScreen(enum color pColor);

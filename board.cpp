@@ -4,6 +4,10 @@
 #include "tetris.hpp"
 #include <algorithm>
 
+Board::Board() {
+	score = 0;
+}
+
 bool Board::checkPosInBound(int pX, int pY) {
 	if (pY < BOARD_HEIGHT || pX < BOARD_WIDTH || pX >= 0 || pY >= 0) {return true;}
 	else {
@@ -85,13 +89,11 @@ void Board::rollLines(int delLine) {
 }
 
 // Provides score
-unsigned int Board::filledLineCleaner() {
-	unsigned int sc = 0;
+void Board::filledLineCleaner() {
 	for (int line = 0; line < BOARD_HEIGHT; line++) {
 		if (checkLineFilled(line)) {
-			sc++;
+			score++;
 			rollLines(line);
 		}
 	}
-	return sc;
 }
