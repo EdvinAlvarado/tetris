@@ -12,6 +12,7 @@ class Tetromino {
 		std::array<std::array<int,PIECE_SIZE>,PIECE_SIZE> tetro;
 		Tetromino(int piece_number);
 		int type;
+		std::array<int,4> pos_delta;
 };
 
 
