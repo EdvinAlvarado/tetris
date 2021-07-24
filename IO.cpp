@@ -1,4 +1,6 @@
 #include "IO.hpp"
+#include <SDL2/SDL_error.h>
+#include <SDL2/SDL_render.h>
 #include <iostream>
 #include <SDL2/SDL.h>
 #include "board.hpp"
@@ -21,7 +23,12 @@ int IO::initGraph() {
 		return WINDOW_ERROR;
 	}
 
-	sdlScreen = SDL_GetWindowSurface(sdlWindow);
+	sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED);
+	if (sdlRenderer == NULL) {
+		std::cerr << "Renderer failed creation\n" << SDL_GetError() << std::endl;
+		return RENDERER_ERROR;
+	}
+
 	return INIT_PASS;
 }
 
@@ -33,25 +40,11 @@ IO::IO() {
 
 // Clear the screen to black
 void IO::clearScreen(enum color pColor) {
-	if (SDL_FillRect(sdlScreen, NULL, rgbColors[pColor]) < 0){
+	setRendererColor(pColor);
+	if (SDL_RenderFillRect(sdlRenderer, NULL) < 0){
 		std::cerr << "Filling screen of a color failed: " << SDL_GetError() << std::endl;
 	};
-}
-
-// Draws a rectangle of any color.
-// TODO make it print a piece.
-//  void IO::drawScreen(int pX1, int pY1, int pX2, int pY2, enum color pColor) {
-// 
-//  }
-
-// Return screen height
-int IO::getScreenHeight() {
-	return sdlScreen->h;
-}
-
-// Return screen width
-int IO::getScreenWidth() {
-	return sdlScreen->w;
+	SDL_RenderPresent(sdlRenderer);
 }
 
 // Update screen
@@ -59,7 +52,7 @@ void IO::updateScreen(enum color pColor, Board gameBoard) {
 	clearScreen(pColor);
 	displayScreenOverlay();
 	printBoard(gameBoard);
-	SDL_UpdateWindowSurface(sdlWindow);
+	SDL_RenderPresent(sdlRenderer);
 }
 
 // Make SDL wait milliseconds
@@ -71,23 +64,23 @@ void IO::initColors() {
 	for (int pColor = 0; pColor < COLOR_MAX; pColor++) {
 		switch(pColor) {
 			case BLACK:
-				rgbColors[pColor] = SDL_MapRGB(sdlScreen->format, 0x00, 0x00, 0x00); break;
+				colors[pColor] = {0x00, 0x00, 0x00, 0xFF}; break;
 			case RED:
-				rgbColors[pColor] = SDL_MapRGB(sdlScreen->format, 0xFF, 0x00, 0x00); break;
+				colors[pColor] = {0xFF, 0x00, 0x00, 0xFF}; break;
 			case GREEN:
-				rgbColors[pColor] = SDL_MapRGB(sdlScreen->format, 0x00, 0xFF, 0x00); break;
+				colors[pColor] = {0x00, 0xFF, 0x00, 0xFF}; break;
 			case BLUE:
-				rgbColors[pColor] = SDL_MapRGB(sdlScreen->format, 0x00, 0x00, 0xFF); break;
+				colors[pColor] = {0x00, 0x00, 0xFF, 0xFF}; break;
 			case CYAN:
-				rgbColors[pColor] = SDL_MapRGB(sdlScreen->format, 0x00, 0xFF, 0xFF); break;
+				colors[pColor] = {0x00, 0xFF, 0xFF, 0xFF}; break;
 			case MAGENTA:
-				rgbColors[pColor] = SDL_MapRGB(sdlScreen->format, 0xFF, 0x00, 0xFF); break;
+				colors[pColor] = {0xFF, 0x00, 0xFF, 0xFF}; break;
 			case YELLOW:
-				rgbColors[pColor] = SDL_MapRGB(sdlScreen->format, 0xFF, 0xFF, 0x00); break;
+				colors[pColor] = {0xFF, 0xFF, 0x00, 0xFF}; break;
 			case WHITE:
-				rgbColors[pColor] = SDL_MapRGB(sdlScreen->format, 0xFF, 0xFF, 0xFF); break;
+				colors[pColor] = {0xFF, 0xFF, 0xFF, 0xFF}; break;
 			case GREY:
-				rgbColors[pColor] = SDL_MapRGB(sdlScreen->format, 0x80, 0x80, 0x80); break;
+				colors[pColor] = {0x80, 0x80, 0x80, 0xFF}; break;
 		}
 	}
 }
@@ -101,19 +94,28 @@ SDL_Rect IO::makeRect(int posX, int posY, int width, int height) {
 	return rect;
 }
 
-// Draws a rectangle of any color.
-void IO::drawRect(enum color pColor) {
-	if (SDL_FillRect(sdlScreen, &sdlRect, rgbColors[pColor]) < 0){
+// fills a rectangle of any color.
+void IO::fillRect(enum color pColor) {
+	setRendererColor(pColor);
+	if (SDL_RenderFillRect(sdlRenderer, &sdlRect) < 0){
 		std::cerr << "Filling rectangle of a color failed: " << SDL_GetError() << std::endl;
 	};
- }
+}
+
+// fills a rectangle of any color.
+void IO::drawRect(enum color pColor) {
+	setRendererColor(pColor);
+	if (SDL_RenderDrawRect(sdlRenderer, &sdlRect) < 0){
+		std::cerr << "Filling rectangle of a color failed: " << SDL_GetError() << std::endl;
+	};
+}
 
 // SCREEN_WIDTH and SCREEN_HEIGHT must be equal or greater than BOARD_WIDTH and BOARD_HEIGHT
 void IO::printBoard(Board gameBoard) {
 	for (int y = 0; y < BOARD_HEIGHT; y++) {
 		for (int x = 0; x < BOARD_WIDTH; x++) {
 			sdlRect = makeRect(x*BLOCK_SIZE + x_offset, y*BLOCK_SIZE + y_offset, BLOCK_SIZE, BLOCK_SIZE);
-			drawRect(static_cast<color>(gameBoard.board[y][x]));
+			fillRect(static_cast<color>(gameBoard.board[y][x]));
 		}
 	}
 }
@@ -132,8 +134,12 @@ unsigned int IO::elapsedTime(Uint32 startTime) {
 void IO::displayScreenOverlay() {
 	if (x_offset > 0) {
 		sdlRect = makeRect(x_offset - BLOCK_SIZE, 0, BLOCK_SIZE, SCREEN_HEIGHT);
-		drawRect(GREY);
+		fillRect(GREY);
 		sdlRect = makeRect(x_offset + BOARD_WIDTH* BLOCK_SIZE, 0, BLOCK_SIZE, SCREEN_HEIGHT);
-		drawRect(GREY);
+		fillRect(GREY);
 	}
+}
+
+void IO::setRendererColor(enum color pColor) {
+	SDL_SetRenderDrawColor(sdlRenderer, colors[pColor].r, colors[pColor].g, colors[pColor].b, colors[pColor].a);
 }
