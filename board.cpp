@@ -66,13 +66,12 @@ boolBlocked Board::collisionChecker(int pX, int pY, Tetromino piece) {
 			}
 		}
 	}
-	// FIXME doesn't work well in borders
 	pi.rotate();
 	for (int y = 0; y < PIECE_SIZE; y++) {
 		for (int x = 0; x < PIECE_SIZE; x++) {
 			if (pi.tetro[y][x] > 0) {
 				// left || right || down || overlap
-				if (x+pX <= 0 || x+pX >= BOARD_WIDTH-1 || y+pY >= BOARD_HEIGHT-1 || backBoard[y+pY][x+pX] > 0) {bDir.rotate = true;}
+				if (x+pX < 0 || x+pX >= BOARD_WIDTH || y+pY >= BOARD_HEIGHT-1 || backBoard[y+pY][x+pX] > 0) {bDir.rotate = true;}
 			}
 		}
 	}
