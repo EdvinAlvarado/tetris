@@ -49,12 +49,13 @@ int main() {
 							nPosY++;
 							// Provides smooth(ish) tetris movements
 							// FIXME keeps going down for a while after letting the key go
+							bBlock = board.collisionChecker(nPosX, nPosY, piece);
 	 						while (SDL_PollEvent(&io.sdlEvent) != 0) {
+								bBlock = board.collisionChecker(nPosX, nPosY, piece);
 								if (io.sdlEvent.key.keysym.sym == SDLK_DOWN && !bBlock.down) {
-									nPosY++;
+									nPosY += board.fallPosY(nPosX, nPosY, piece);
 									board.writeBoard(nPosX, nPosY, piece);
 									io.updateScreen(BLACK, board);
-									bBlock = board.collisionChecker(nPosX, nPosY, piece);
 									io.wait(50);		
 								}
 								else {io.clearEvent();}
@@ -65,12 +66,13 @@ int main() {
 						if (!bBlock.left) {
 							nPosX--;
 							// Provides smooth(ish) tetris movements
+							bBlock = board.collisionChecker(nPosX, nPosY, piece);
  							while (SDL_PollEvent(&io.sdlEvent) != 0) {
+								bBlock = board.collisionChecker(nPosX, nPosY, piece);
 								if (io.sdlEvent.key.keysym.sym == SDLK_LEFT && !bBlock.left) {
 									nPosX--;
 									board.writeBoard(nPosX, nPosY, piece);
 									io.updateScreen(BLACK, board);
-									bBlock = board.collisionChecker(nPosX, nPosY, piece);
 									io.wait(50);		
 								}
 								else {io.clearEvent();}
@@ -81,12 +83,13 @@ int main() {
 						if (!bBlock.right) {
 							nPosX++;
 							// Provides smooth(ish) tetris movements
+							bBlock = board.collisionChecker(nPosX, nPosY, piece);
 							while (SDL_PollEvent(&io.sdlEvent) != 0) {
+								bBlock = board.collisionChecker(nPosX, nPosY, piece);
 								if (io.sdlEvent.key.keysym.sym == SDLK_RIGHT && !bBlock.right) {
 									nPosX++;
 									board.writeBoard(nPosX, nPosY, piece);
 									io.updateScreen(BLACK, board);
-									bBlock = board.collisionChecker(nPosX, nPosY, piece);
 									io.wait(50);		
 								}
 								else {io.clearEvent();}

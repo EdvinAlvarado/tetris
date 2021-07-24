@@ -115,7 +115,11 @@ void IO::printBoard(Board gameBoard) {
 	for (int y = 0; y < BOARD_HEIGHT; y++) {
 		for (int x = 0; x < BOARD_WIDTH; x++) {
 			sdlRect = makeRect(x*BLOCK_SIZE + x_offset, y*BLOCK_SIZE + y_offset, BLOCK_SIZE, BLOCK_SIZE);
-			fillRect(static_cast<color>(gameBoard.board[y][x]));
+			if (gameBoard.board[y][x] < 0) {
+				drawRect(static_cast<color>(-gameBoard.board[y][x]));
+			} else {
+				fillRect(static_cast<color>(gameBoard.board[y][x]));
+			}
 		}
 	}
 }

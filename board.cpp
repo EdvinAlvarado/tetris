@@ -1,8 +1,10 @@
 #include "board.hpp"
+#include <array>
 #include <iostream>
 #include <numeric>
 #include "tetris.hpp"
 #include <algorithm>
+#include <utility>
 
 Board::Board() {
 	score = 0;
@@ -25,10 +27,14 @@ bool Board::checkLineFilled(int line) {
 
 void Board::writeBoard(int pX, int pY, Tetromino piece) {
 	board = backBoard;
+	int delta_y = fallPosY(pX, pY, piece);
 	for (int y = 0; y < PIECE_SIZE; y++) {
 		for (int x = 0; x < PIECE_SIZE; x++) {
 			if (piece.tetro[y][x] > 0) {
-				if (checkPosInBound(x+pX, y+pY)) {board[y+pY][x+pX] = piece.type;} 
+				if (checkPosInBound(x+pX, y+pY)) {
+					board[y+pY][x+pX] = piece.type;
+					board[y+pY+delta_y][x+pX] = -piece.type;
+				} 
 			}
 		}
 	}
@@ -96,4 +102,13 @@ void Board::filledLineCleaner() {
 			rollLines(line);
 		}
 	}
+}
+
+// Provides the lowest y position they can go.
+int Board::fallPosY(int pX, int pY, Tetromino piece) {
+	int y = 0;
+	while (!collisionChecker(pX, pY+y, piece).down) {
+		y++;
+	}
+	return y;
 }
