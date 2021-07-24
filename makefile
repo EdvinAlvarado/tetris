@@ -1,6 +1,6 @@
 CC = g++
 WFLAGS = -Wall -Wextra 
-CPPFLAGS = -std=c++14 $(WFLAGS)
+CPPFLAGS = -std=c++17 $(WFLAGS)
 LDFLAGS = -lSDL2
 OBJECT = main.o tetris.o IO.o board.o
 
@@ -16,7 +16,7 @@ tetris.o: tetris.cpp tetris.hpp
 IO.o: IO.cpp IO.hpp board.hpp screen.hpp
 	$(CC) $(CPPFLAGS) $(LDFLAGS) -c IO.cpp
 
-board.o: board.cpp board.hpp tetris.hpp IO.hpp screen.hpp
+board.o: board.cpp board.hpp tetris.hpp screen.hpp
 	$(CC) $(CPPFLAGS) -c board.cpp
 
 clean:

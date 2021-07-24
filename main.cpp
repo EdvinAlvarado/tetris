@@ -111,7 +111,7 @@ int main() {
 			else {
 				board.writeBackBoard(nPosX, nPosY, piece);
 				board.filledLineCleaner(); // Needs to be under writeBackBoard so it cleans the piece
-				nPosX = BOARD_WIDTH / 2; 
+				nPosX = BOARD_WIDTH / 2;
 				nPosY = 0;
 				piece = Tetromino(rand() % 7);
 			}	

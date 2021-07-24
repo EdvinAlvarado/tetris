@@ -4,8 +4,6 @@
 #include <array>
 #include "tetris.hpp"
 #include "screen.hpp"
-// #define BOARD_WIDTH SCREEN_WIDTH/BLOCK_SIZE // Board width in blocks
-// #define BOARD_HEIGHT SCREEN_HEIGHT/BLOCK_SIZE // Board height in blocks
 
 // TODO consider eliminating
 enum position {POS_FREE, POS_FILLED}; // POS_FREE = free position of the board; POS_FILLED = filled position of the board

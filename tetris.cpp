@@ -19,7 +19,6 @@ void Tetromino::rotate() {
 	std::swap(t_dim, pos_delta);
 }
 
-// char fieldSymbolLegend[] = " ABCDEFG=#";
 int pieces[7][5][5] = 
 {
 	{

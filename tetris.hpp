@@ -14,6 +14,4 @@ class Tetromino {
 		int type;
 		std::array<int,4> pos_delta;
 };
-
-
 #endif
