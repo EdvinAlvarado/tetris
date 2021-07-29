@@ -21,14 +21,17 @@ using std::endl;
 using std::string;
 using namespace std::chrono;
 using namespace std::chrono_literals;
-// Will assume 4x4 tetromino until I can make the program work. Then I will expand code for iti
 int main() {
 	srand (time(0));	
 	
 	// Game Logic
 	bool bGameOver = false;
-	int nPosX = BOARD_WIDTH / 2; 
-	int nPosY = 0;
+	const int startX = BOARD_WIDTH / 2;
+	const int startY  = 0;
+	int nPosX = startX; 
+	int nPosY = startY;
+	// Handles fail condition
+	int endCounter = 0;
 
 	Tetromino piece(rand() % 7);
 	Board board;
@@ -47,6 +50,7 @@ int main() {
 					case SDLK_DOWN:
 						if (!bBlock.down) {
 							nPosY++;
+							endCounter = 0;
 							// Provides smooth(ish) tetris movements
 							// FIXME keeps going down for a while after letting the key go
 							bBlock = board.collisionChecker(nPosX, nPosY, piece);
@@ -107,14 +111,19 @@ int main() {
 		
 		if (io.elapsedTime(loopStartTime) > 500) {
 			loopStartTime = SDL_GetTicks();
-			if (!bBlock.down) {nPosY++;}
+			if (!bBlock.down) {nPosY++; endCounter = 0;}
+			else if (endCounter > 0) {
+				cout << "Game Over!!" << " score: " << board.score <<  endl;
+				return 0;		
+			}
 			else {
+				endCounter++;
 				board.writeBackBoard(nPosX, nPosY, piece);
 				board.filledLineCleaner(); // Needs to be under writeBackBoard so it cleans the piece
-				nPosX = BOARD_WIDTH / 2;
-				nPosY = 0;
+				nPosX = startX;
+				nPosY = startY;
 				piece = Tetromino(rand() % 7);
-			}	
+			}
 		}
 		io.wait(50);
 		board.writeBoard(nPosX, nPosY, piece);
@@ -130,6 +139,6 @@ int main() {
 	}
 	// io.wait(1000);
 	// std::this_thread::sleep_for(5000ms);
-	cout << "Game Over!!" << " score: " << board.score <<  endl;
+	cout << "Quit! Game Over!!" << " score: " << board.score <<  endl;
 	return 0;
 }
