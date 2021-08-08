@@ -52,7 +52,9 @@ void Board::writeBackBoard(int pX, int pY, Tetromino piece) {
 
 boolBlocked Board::collisionChecker(int pX, int pY, Tetromino piece) {
 	Tetromino pi = piece;
+	pi.rotate();
 	boolBlocked bDir;
+
 	for (int y = 0; y < PIECE_SIZE; y++) {
 		for (int x = 0; x < PIECE_SIZE; x++) {
 			if (piece.tetro[y][x] > 0) {
@@ -64,21 +66,17 @@ boolBlocked Board::collisionChecker(int pX, int pY, Tetromino piece) {
 				if (y+pY >= BOARD_HEIGHT-1) {bDir.down = true;}
 				else if (backBoard[y+pY+1][x+pX] > 0) {bDir.down = true;}
 			}
-		}
-	}
-	pi.rotate();
-	for (int y = 0; y < PIECE_SIZE; y++) {
-		for (int x = 0; x < PIECE_SIZE; x++) {
 			if (pi.tetro[y][x] > 0) {
 				// left || right || down || overlap
 				if (x+pX < 0 || x+pX >= BOARD_WIDTH || y+pY >= BOARD_HEIGHT-1 || backBoard[y+pY][x+pX] > 0) {bDir.rotate = true;}
+
 			}
 		}
 	}
 	return bDir;
 }
 
-void Board::rollLines(int delLine) {	
+void Board::rollLines(int delLine) {
 	if (delLine >= BOARD_HEIGHT || delLine < 0) {
 		std::cerr << "Out of bound line" << std::endl;
 	} else {
