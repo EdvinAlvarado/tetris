@@ -1,2 +1,2 @@
 # tetris
-Inspired on javidx9
+Making tetris from scratch
