@@ -7,7 +7,7 @@
 #include "screen.hpp"
 
 
-// TODO Consider adding int returns for error handling.
+// TODO Consider eliminating int returns for error handling.
 // Initialize SDL Graphics
 int IO::initGraph() {
 	// Initialize the SDL video system and reports any error.
@@ -23,7 +23,7 @@ int IO::initGraph() {
 		return WINDOW_ERROR;
 	}
 
-	sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED);
+	sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC);
 	if (sdlRenderer == NULL) {
 		std::cerr << "Renderer failed creation\n" << SDL_GetError() << std::endl;
 		return RENDERER_ERROR;

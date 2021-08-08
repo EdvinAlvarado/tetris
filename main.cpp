@@ -60,7 +60,7 @@ int main() {
 									nPosY += board.fallPosY(nPosX, nPosY, piece);
 									board.writeBoard(nPosX, nPosY, piece);
 									io.updateScreen(BLACK, board);
-									io.wait(50);		
+									io.wait(50);
 								}
 								else {io.clearEvent();}
 							}					
